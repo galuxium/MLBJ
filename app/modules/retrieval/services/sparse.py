@@ -64,6 +64,13 @@ class SparseSearchService:
 
         logger.info("sparse_index_rebuilt", num_docs=len(case_nos))
 
+    def dump_state(self) -> dict:
+        return {"bm25": self._index, "case_nos": list(self._case_nos)}
+
+    def load_state(self, state: dict) -> None:
+        self._index = state["bm25"]
+        self._case_nos = list(state["case_nos"])
+
     async def search(self, query: str, top_k: int) -> dict[str, float]:
         async with self._lock:
             index = self._index

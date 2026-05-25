@@ -59,3 +59,18 @@ class DocumentRegistry:
 
     def size(self) -> int:
         return len(self._texts)
+
+    def case_nos(self) -> list[str]:
+        return list(self._texts.keys())
+
+    def dump_state(self) -> dict:
+        return {
+            "texts": dict(self._texts),
+            "tokens": dict(self._tokens),
+            "mongo_ids": dict(self._mongo_ids),
+        }
+
+    def load_state(self, state: dict) -> None:
+        self._texts = dict(state["texts"])
+        self._tokens = dict(state["tokens"])
+        self._mongo_ids = dict(state["mongo_ids"])
