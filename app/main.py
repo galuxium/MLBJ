@@ -34,6 +34,7 @@ from app.modules.auth.router import ensure_auth_indexes, router as auth_router
 from app.modules.chatbot.router import router as chatbot_router
 from app.modules.summarize.router import router as summarize_router
 from app.modules.retrieval.router import router as retrieval_router
+from app.modules.prediction.router import router as prediction_router
 
 from app.modules.retrieval.services.embedder import EmbeddingService
 from app.modules.retrieval.services.reranker import RerankerService
@@ -162,3 +163,4 @@ app.include_router(auth_router)
 app.include_router(chatbot_router)
 app.include_router(retrieval_router)
 app.include_router(summarize_router)
+app.include_router(prediction_router)
