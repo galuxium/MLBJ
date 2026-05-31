@@ -1,39 +1,75 @@
-.idea
-.ipynb_checkpoints
-.mypy_cache
-.vscode
-__pycache__
-.pytest_cache
-htmlcov
-dist
-site
-.coverage*
-coverage.xml
-.netlify
-test.db
-log.txt
-Pipfile.lock
-env3.*
-env
-docs_build
-site_build
-venv
-docs.zip
-archive.zip
-
-# vim temporary files
-*~
-.*.sw?
-.cache
-
-# macOS
-.DS_Store
-
-.codspeed
-
+# ── Secrets & local config ──────────────────────────────────────────────────
 .env
-chroma_data
-llm-models
+.env.*
+!.env.example
+.claude
+
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+.installed.cfg
+MANIFEST
+
+# ── Virtual environments ────────────────────────────────────────────────────
 .venv
 venv
-.claude
+env
+env3.*
+ENV/
+
+# ── Models & data (large binaries, regenerable) ─────────────────────────────
+llm-models
+chroma_data
+*.pkl
+*.faiss
+*.index
+
+# ── Test / coverage / type-check caches ─────────────────────────────────────
+.pytest_cache
+.mypy_cache
+.cache
+.coverage*
+coverage.xml
+htmlcov
+test.db
+.codspeed
+
+# ── Logs & temp ─────────────────────────────────────────────────────────────
+*.log
+log.txt
+*.bak
+*.tmp
+pip-log.txt
+
+# ── Notebooks ───────────────────────────────────────────────────────────────
+.ipynb_checkpoints
+
+# ── Editors / IDEs ──────────────────────────────────────────────────────────
+.idea
+.vscode
+*~
+.*.sw?
+
+# ── Build artifacts / sites ─────────────────────────────────────────────────
+site
+docs_build
+site_build
+docs.zip
+archive.zip
+.netlify
+Pipfile.lock
+
+# ── OS ──────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
