@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -13,15 +13,15 @@ class Judgment(BaseModel):
     title: str
     jurisdiction: Optional[str] = None
     date: Optional[str] = None
-    issue: Optional[str] = None
-    facts: Optional[str] = None
-    court_reasoning: Optional[str] = None
-    precedent_analysis: Optional[str] = None
-    argument_by_petitioner: Optional[str] = None
+    issue: Optional[List[str]] = None
+    facts: Optional[List[str]] = None
+    court_reasoning: Optional[List[str]] = None
+    precedent_analysis: Optional[List[str]] = None
+    argument_by_petitioner: Optional[List[str]] = None
     conclusion: Optional[str] = None
-    ipc_sections: Optional[str] = None
-    statute_analysis: Optional[str] = None
-    argument_by_respondent: Optional[str] = None
+    ipc_sections: Optional[List[str]] = None
+    statute_analysis: Optional[List[str]] = None
+    argument_by_respondent: Optional[List[str]] = None
 
     def get_combined_text(self) -> str:
         fields = [
@@ -71,15 +71,15 @@ class SearchResult(BaseModel):
     title: str
     jurisdiction: Optional[str] = None
     date: Optional[str] = None
-    issue: Optional[str] = None
-    facts: Optional[str] = None
-    court_reasoning: Optional[str] = None
-    precedent_analysis: Optional[str] = None
-    argument_by_petitioner: Optional[str] = None
-    conclusion: Optional[str] = None
-    ipc_sections: Optional[str] = None
-    statute_analysis: Optional[str] = None
-    argument_by_respondent: Optional[str] = None
+    issue: Optional[List[str]] = None
+    facts: Optional[List[str]] = None
+    court_reasoning: Optional[List[str]] = None
+    precedent_analysis: Optional[List[str]] = None
+    argument_by_petitioner: Optional[List[str]] = None
+    conclusion: Optional[List[str]] = None
+    ipc_sections: Optional[List[str]] = None
+    statute_analysis: Optional[List[str]] = None
+    argument_by_respondent: Optional[List[str]] = None
     dense_score: float
     sparse_score: float
     combined_score: float
