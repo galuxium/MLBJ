@@ -139,6 +139,10 @@ class SearchService:
         )
 
         fused = weighted_fusion(dense_scores, sparse_scores, request.dense_weight)
+        
+        # Exclude the source case itself from the recommendations
+        fused.pop(case_no, None)
+        
         shortlisted = sorted(fused, key=lambda x: fused[x], reverse=True)[:shortlist_n]
 
         if request.enable_rerank and shortlisted:
@@ -254,21 +258,33 @@ class SearchService:
         rerank_meta: dict[str, tuple[float, float]],
     ) -> SearchResult:
         cn = payload.get("case_no", "")
+
         logit, prob = rerank_meta.get(cn, (None, None))
+        
+        # Helper to ensure string fields are converted to lists if models expect lists
+        def ensure_list(val: Any) -> list[str] | None:
+            if val is None:
+                return None
+            if isinstance(val, list):
+                return val
+            if isinstance(val, str):
+                return [val]
+            return [str(val)]
+
         return SearchResult(
             case_no=cn,
             title=payload.get("title", ""),
             jurisdiction=payload.get("jurisdiction"),
             date=payload.get("date"),
-            issue=payload.get("issue"),
-            facts=payload.get("facts"),
-            court_reasoning=payload.get("court_reasoning"),
-            precedent_analysis=payload.get("precedent_analysis"),
-            argument_by_petitioner=payload.get("argument_by_petitioner"),
-            conclusion=payload.get("conclusion"),
-            ipc_sections=payload.get("ipc_sections"),
-            statute_analysis=payload.get("statute_analysis"),
-            argument_by_respondent=payload.get("argument_by_respondent"),
+            issue=ensure_list(payload.get("issue")),
+            facts=ensure_list(payload.get("facts")),
+            court_reasoning=ensure_list(payload.get("court_reasoning")),
+            precedent_analysis=ensure_list(payload.get("precedent_analysis")),
+            argument_by_petitioner=ensure_list(payload.get("argument_by_petitioner")),
+            conclusion=ensure_list(payload.get("conclusion")),
+            ipc_sections=ensure_list(payload.get("ipc_sections")),
+            statute_analysis=ensure_list(payload.get("statute_analysis")),
+            argument_by_respondent=ensure_list(payload.get("argument_by_respondent")),
             dense_score=dense_scores.get(cn, 0.0),
             sparse_score=sparse_scores.get(cn, 0.0),
             combined_score=fused.get(cn, 0.0),
