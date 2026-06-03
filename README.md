@@ -76,14 +76,14 @@ The project comes with a dedicated startup script (`app/setup.py`) to hydrate Qd
 **To run the migration/setup:**
 Ensure your virtual environment is active and run:
 ```bash
-python app/setup.py
+python -m app.setup
 ```
 > **Note:** The first time you run this, it will download the BAAI models to the `llm-models/` folder. This may take some time depending on your internet connection. Generating embeddings is CPU-bound; it will safely pick up where it left off if interrupted.
 
 **To monitor progress:**
 You can open a secondary terminal tab, activate your virtual environment, and run the realtime watchdog script:
 ```bash
-python scripts/watch.py
+python -m scripts.watch
 ```
 
 ---
