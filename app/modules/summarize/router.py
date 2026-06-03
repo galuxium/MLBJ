@@ -9,7 +9,6 @@ from google.genai import types
 from pydantic import BaseModel, field_validator
 from pypdf import PdfReader
 
-from app.modules.auth.router import get_current_user
 from .prompts import retrievePrompts
 
 logger = logging.getLogger(__name__)
@@ -79,9 +78,8 @@ def _format_response(raw: str) -> dict:
 
 @router.post("/text")
 async def summarize_text(
-  data: TextRequest,
-  _: dict = Depends(get_current_user),
-):
+  data: TextRequest
+  ):
   """Extract structured case information from a text description."""
   try:
     raw = _extract_with_gemini(
@@ -105,8 +103,7 @@ async def summarize_text(
 
 @router.post("/file")
 async def extract_from_file(
-  file: UploadFile,
-  _: dict = Depends(get_current_user),
+  file: UploadFile
 ):
   """Extract raw text from an uploaded PDF."""
   if file.filename is None:
@@ -131,10 +128,15 @@ async def extract_from_file(
     import io
     reader = PdfReader(io.BytesIO(content))
     text = "\n".join(page.extract_text() or "" for page in reader.pages)
+    raw = _extract_with_gemini(
+      system_prompt=_prompts.system_prompt(),
+      user_prompt=_prompts.user_prompt(text=text),
+    )
+
     return JSONResponse(
       content={
-        "data": text,
         "file": file.filename,
+        "result": _format_response(raw),
         "timestamp": datetime.now(timezone.utc).isoformat(),
       },
       status_code=200,
