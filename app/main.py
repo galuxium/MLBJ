@@ -103,7 +103,7 @@ async def lifespan(app: FastAPI):
     # Populate registry + BM25 from MongoDB; sync Qdrant if stale.
     # Runs as a background task so the server accepts requests immediately.
     # Searches return partial results while indexing is in progress.
-    asyncio.create_task(indexing_svc.load_from_mongo())
+    # asyncio.create_task(indexing_svc.load_from_mongo())
 
     # Attach to app.state so dependencies.py can retrieve them
     app.state.search_service    = search_svc

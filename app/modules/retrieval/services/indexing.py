@@ -178,16 +178,38 @@ class IndexingService:
         texts = [combine_text(doc) for doc in docs]
 
         if embed:
-            embeddings = await self._embedder.encode_documents(texts)
-            points = [
-                PointStruct(
-                    id=stable_point_id(doc["case_no"]),
-                    vector=emb.tolist(),
-                    payload={k: v for k, v in doc.items() if k != "_id"},
+            # Check which documents already exist in Qdrant to avoid re-embedding
+            target_ids = [stable_point_id(doc["case_no"]) for doc in docs]
+            existing_records = []
+            try:
+                existing_records = await self._qdrant.retrieve(
+                    collection_name=self._settings.qdrant_collection,
+                    ids=target_ids,
+                    with_payload=False,
+                    with_vectors=False,
                 )
-                for doc, emb in zip(docs, embeddings)
-            ]
-            await self._qdrant_upsert(points)
+            except Exception:
+                pass
+            
+            existing_ids = {record.id for record in existing_records}
+            
+            # Filter to only the documents (and their texts) that need embedding
+            missing_indices = [i for i, doc in enumerate(docs) if stable_point_id(doc["case_no"]) not in existing_ids]
+            
+            if missing_indices:
+                missing_texts = [texts[i] for i in missing_indices]
+                missing_docs = [docs[i] for i in missing_indices]
+                
+                embeddings = await self._embedder.encode_documents(missing_texts)
+                points = [
+                    PointStruct(
+                        id=stable_point_id(doc["case_no"]),
+                        vector=emb.tolist(),
+                        payload={k: v for k, v in doc.items() if k != "_id"},
+                    )
+                    for doc, emb in zip(missing_docs, embeddings)
+                ]
+                await self._qdrant_upsert(points)
 
         coros = [
             self._registry.register(
@@ -203,7 +225,7 @@ class IndexingService:
     async def _upsert_mongo(self, case_no: str, data: dict) -> str:
         existing = await self._mongo.find_one({"case_no": case_no}, {"_id": 1})
         if existing:
-            await self._mongo.replace_one({"_id": existing["_id"]}, data)
+            # Skip replacing if the case already exists
             return str(existing["_id"])
         result = await self._mongo.insert_one(data)
         return str(result.inserted_id)
