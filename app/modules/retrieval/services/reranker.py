@@ -58,10 +58,23 @@ class RerankerService:
         """
         if not candidate_ids:
             return []
-        pairs = [(query, text) for text in candidate_texts]
+        # pairs = [(query, text) for text in candidate_texts]
+        # loop = asyncio.get_running_loop()
+        # logits, probs = await loop.run_in_executor(self._executor, self._predict_sync, pairs)
+        # ranked = sorted(zip(candidate_ids, logits, probs), key=lambda x: x[1], reverse=True)
+        # return list(ranked[:top_k])
+        LIMIT = 20 
+        
+        # Slice both lists to the limit before processing
+        subset_ids = candidate_ids[:LIMIT]
+        subset_texts = candidate_texts[:LIMIT]
+        
+        pairs = [(query, text) for text in subset_texts]
         loop = asyncio.get_running_loop()
         logits, probs = await loop.run_in_executor(self._executor, self._predict_sync, pairs)
-        ranked = sorted(zip(candidate_ids, logits, probs), key=lambda x: x[1], reverse=True)
+        
+        # Sort and return the requested top_k
+        ranked = sorted(zip(subset_ids, logits, probs), key=lambda x: x[1], reverse=True)
         return list(ranked[:top_k])
 
     def shutdown(self) -> None:
